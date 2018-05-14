@@ -10,7 +10,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            env | grep AWS
             apk update && apk upgrade
             apk add --no-cache \
               py-pip
