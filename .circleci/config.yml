@@ -30,7 +30,7 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              login="$(aws ecr get-login --no-include-email --region us-east-1 )"
+              login="$(aws ecr get-login --region us-east-1 )"
               ${login}
               docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/goapp:latest
             fi
