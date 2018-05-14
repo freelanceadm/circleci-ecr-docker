@@ -2,6 +2,7 @@ version: "3"
 
 services:
   servicetest:
+    image: app
     command: php ./index.php 
     ports:
       - "80:80"
