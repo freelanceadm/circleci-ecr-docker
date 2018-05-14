@@ -35,8 +35,9 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               login="$(aws ecr get-login --no-include-email --region us-east-1 )"
+              echo ${login}
               ${login}
-              docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/goapp:latest
+              docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest
             fi
 #deployment:
 #  prod:
