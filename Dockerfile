@@ -7,6 +7,7 @@ RUN apk --no-cache add \
 	less \
 	python \
 	py2-pip \
+        && pip install --upgrade pip \
 	&& pip install awscli \
 	&& mkdir -p /root/.aws \
 	&& { \
