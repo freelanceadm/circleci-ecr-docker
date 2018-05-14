@@ -10,6 +10,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            env | grep AWS
+            aws ecr describe-repositories --region us-east-1
+            pkg update
+            apk upgrade
             apk add --no-cache \
               py-pip
             pip install --upgrade pip
