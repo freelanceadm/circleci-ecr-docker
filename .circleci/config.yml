@@ -4,6 +4,9 @@ jobs:
     working_directory: /app
     docker:
       - image: docker:17.05.0-ce-git
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID_STAGING
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY_STAGING
     steps:
       - checkout
       - setup_remote_docker
@@ -31,7 +34,7 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              login="$(aws ecr get-login --region us-east-1 )"
+              login="$(aws ecr get-login --no-include-email --region us-east-1 )"
               ${login}
               docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/goapp:latest
             fi
