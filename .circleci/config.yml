@@ -21,6 +21,7 @@ jobs:
       - run:
           name: Build image
           command: |
+            echo test
             aws ecr describe-repositories --region us-east-1
             docker build -t goapp:latest .
             docker tag goapp:latest 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest
