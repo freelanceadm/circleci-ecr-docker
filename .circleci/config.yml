@@ -11,8 +11,7 @@ jobs:
           name: Install dependencies
           command: |
             env | grep AWS
-            pkg update
-            apk upgrade
+            apk update && apk upgrade
             apk add --no-cache \
               py-pip
             pip install --upgrade pip
