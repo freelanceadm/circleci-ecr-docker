@@ -1,22 +1,7 @@
-FROM alpine:latest
-LABEL maintainer "Jessie Frazelle <jess@linux.com>"
+lding on top of Ubuntu 14.04. The best distro around.
+FROM ubuntu:14.04
 
-RUN apk --no-cache add \
-	ca-certificates \
-	groff \
-	less \
-	python \
-	py2-pip \
-        apache2 php5-apache2 \
-        && pip install --upgrade pip \
-	&& pip install awscli \
-	&& mkdir -p /root/.aws \
-	&& { \
-		echo '[default]'; \
-		echo 'output = json'; \
-		echo 'region = $AWS_DEFAULT_REGION'; \
-		echo 'aws_access_key_id = $AMAZON_ACCESS_KEY_ID'; \
-		echo 'aws_secret_access_key = $AMAZON_SECRET_ACCESS_KEY'; \
-	} > /root/.aws/config
+COPY ./go-ecs-ecr /opt/
+EXPOSE 8080
 
-ENTRYPOINT [ "aws" ]
+ENTRYPOINT ["/opt/go-ecs-ecr"]
