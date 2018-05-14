@@ -11,7 +11,6 @@ jobs:
           name: Install dependencies
           command: |
             env | grep AWS
-            aws ecr describe-repositories --region us-east-1
             pkg update
             apk upgrade
             apk add --no-cache \
@@ -23,6 +22,7 @@ jobs:
       - run:
           name: Build image
           command: |
+            aws ecr describe-repositories --region us-east-1
             docker build -t goapp:latest .
             docker tag goapp:latest 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest
             docker images
