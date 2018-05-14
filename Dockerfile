@@ -1,4 +1,3 @@
-lding on top of Ubuntu 14.04. The best distro around.
 FROM ubuntu:14.04
 
 COPY ./go-ecs-ecr /opt/
