@@ -1,18 +1,35 @@
-machine:
-  services:
-    - docker
-
-dependencies:
-  post:
-    - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-sample-webapp:$CIRCLE_SHA1 .
-
-test:
-  post:
-    - docker run -d -p 8080:8080 --name sample-go-webapp $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-sample-webapp:$CIRCLE_SHA1; sleep 10
-    - curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello World!"
-
-deployment:
-  prod:
-    branch: master
-    commands:
-      - ./deploy.sh
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build image
+          command: |
+#389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo
+            docker build -t goapp:latest .
+            docker tag goapp:latest 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest
+            docker images
+#            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-sample-webapp:$CIRCLE_SHA1 .
+      - run:
+          name: Run tests
+          command: |
+            docker run -d -p 8080:8080 --name sample-go-webapp 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest ; sleep 10
+            curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello World!"
+      - run:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              login="$(aws ecr get-login --no-include-email --region us-east-1 )"
+              ${login}
+              docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/goapp:latest
+            fi
+#deployment:
+#  prod:
+#    branch: master
+#    commands:
+#      - ./deploy.sh
