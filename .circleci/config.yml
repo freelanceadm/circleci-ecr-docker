@@ -8,13 +8,19 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.0-r1
+            pip install \
+              docker-compose==1.12.0 \
+              awscli==1.11.76
+      - run:
           name: Build image
           command: |
-#389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo
             docker build -t goapp:latest .
             docker tag goapp:latest 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo/goapp:latest
             docker images
-#            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-sample-webapp:$CIRCLE_SHA1 .
       - run:
           name: Run tests
           command: |
