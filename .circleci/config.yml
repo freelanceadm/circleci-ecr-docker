@@ -21,15 +21,15 @@ jobs:
           command: |
             echo test
 
-workflows:
-  version: 2
-  getimage-approval-deploy:
-    jobs:
-      - build
-      - hold:
-          type: approval
-          requires:
-           - getdockerimage 
-      - pushtoprod:
-          requires:
-            - hold
+#workflows:
+#  version: 2
+#  getimage-approval-deploy:
+#    jobs:
+#      - build
+#      - hold:
+#          type: approval
+#          requires:
+#           - getdockerimage 
+#      - pushtoprod:
+#          requires:
+#            - hold
