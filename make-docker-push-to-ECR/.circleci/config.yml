@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:stable-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk update && apk upgrade
+            apk add --no-cache \
+              py-pip
+            pip install --upgrade pip
+            pip install \
+              docker-compose==1.12.0 \
+              awscli
+      - run:
+          name: Build image
+          command: |
+            docker build -t circle-ci-repo .
+            docker tag circle-ci-repo:latest 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo:latest
+            docker images
+      - run:
+          name: Run tests
+          command: |
+            docker run -d -p 8080:8080 --name sample-go-webapp 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo:latest
+            aws ecr describe-repositories --region us-east-1
+#            curl --retry 10 --retry-delay 5 localhost:8080 | grep "Hello World!"
+      - run:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              login="$(aws ecr get-login --no-include-email --region us-east-1 )"
+              echo ${login}
+              ${login}
+              docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo:latest
+            fi
+#deployment:
+#  prod:
+#    branch: master
+#    commands:
+#      - ./deploy.sh
