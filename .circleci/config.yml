@@ -24,19 +24,16 @@ jobs:
               docker-compose==1.12.0 \
               awscli
       - run:
-          name: Get image
+          name: Get image from staging ECR
           command: |
             login="$(aws ecr get-login --no-include-email --region ${REGION} )"
             ${login}
             docker pull ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG}
             docker images
-#      - run:
-#          name: Push application Docker image
-#          command: |
-#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-#              login="$(aws ecr get-login --no-include-email --region us-east-1 )"
-#              docker push 389503229785.dkr.ecr.us-east-1.amazonaws.com/circle-ci-repo:latest
-#            fi
+      - run:
+          name: Push image to production ECR
+          command: |
+            docker push ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${IMGTAG}
 #deployment:
 #  prod:
 #    branch: master
