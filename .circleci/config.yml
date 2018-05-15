@@ -1,26 +1,25 @@
-workflows:
-  version: 2
-  getimage-test-and-approval-deploy:
-    jobs:
-      - getimage:
-          environment:
-            - TAG: "latest"
-        steps:
-          - run:
-              name: "Getting image with provided tag from Staging environment"
-              command: |
-                echo test
+version: 2
+jobs:
+  getdockerimage:
+    working_directory: /tmp
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run:
+          name: "Getting image with provided tag from Staging environment"
+          command: |
+            echo test
 
-      - hold:
-        type: approval
-        requires:
-          - getimage
+  hold:
+    type: approval
+    requires:
+      - getdockerimage
 
-      - pushtoprod:
-        steps:
-          - run:
-              name: "Push image from Staging to Production..."
-              command: |
-                echo test
-        requires:
-          - hold
+  pushtoprod:
+    steps:
+      - run:
+          name: "Push image from Staging to Production..."
+          command: |
+            echo test
+    requires:
+      - hold
