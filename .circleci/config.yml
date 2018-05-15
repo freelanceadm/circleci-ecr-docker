@@ -38,6 +38,15 @@ jobs:
           name: Push image to production ECR
           command: |
             docker push ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${IMGTAG}
+workflows:
+  version: 2
+  get-image-wait-approval-deploy:
+    jobs:
+      - hold:
+          type: approval
+      - build:
+          requires:
+            - hold
 #deployment:
 #  prod:
 #    branch: master
