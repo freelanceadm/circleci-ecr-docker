@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Push image to dest account
           command: |
-            login=$(aws ecr get-login --registry-ids ${DSTACCOUNT}  --region ${REGION} )
+            login=$(aws ecr get-login --registry-ids ${DSTACCOUNT}  --region ${REGION} --no-include-email )
             ${login} || echo AWS use deprecated -e option
             docker tag ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG} ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
             docker push ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
