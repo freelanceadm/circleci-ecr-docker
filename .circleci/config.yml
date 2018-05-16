@@ -28,7 +28,7 @@ jobs:
           name: Get image from staging ECR
           command: |
             login="$(aws ecr get-login --no-include-email --region ${REGION} )"
-            ${login}
+            ${login} 
             docker pull ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG}
             cd /tmp
             docker save --output newversion.tar ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG}
@@ -42,8 +42,9 @@ jobs:
           name: Push image to dest account
           command: |
             login=$(aws ecr get-login --registry-ids ${DSTACCOUNT}  --region ${REGION} )
-            echo ${login}
-            docker login --help
+            ${login} || echo AWS use deprecated -e option
+            docker tag ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG} ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
+            docker push ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
       - run:
           name: Tag pulled image with destination reponame
           command: |
