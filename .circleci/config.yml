@@ -6,7 +6,9 @@ jobs:
       ACCOUNTID: "389503229785"
       SRCREPO: "circle-ci-repo"
       IMGTAG: "latest"
-      DSTREPO: "circle-ci-repo-stg"
+      DSTREPO: "dst-repo-test"
+      DSTTAG: "copiedimage"
+      DSTACCOUNT: "992536150469"
     working_directory: /app
     docker:
       - image: docker:stable-git
@@ -21,7 +23,6 @@ jobs:
               py-pip
             pip install --upgrade pip
             pip install \
-              docker-compose==1.12.0 \
               awscli
       - run:
           name: Get image from staging ECR
@@ -29,7 +30,20 @@ jobs:
             login="$(aws ecr get-login --no-include-email --region ${REGION} )"
             ${login}
             docker pull ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG}
+            cd /tmp
+            docker save --output newversion.tar ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG}
             docker images
+
+      - store_artifacts:
+          path: /tmp/newversion.tar
+          destination: newversion.tar
+
+      - run:
+          name: Push image to dest account
+          command: |
+            login=$(aws ecr get-login –-registry-ids ${DSTACCOUNT}  --region ${REGION} )
+            docker tag ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG} ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
+            docker push ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
       - run:
           name: Tag pulled image with destination reponame
           command: |
@@ -47,8 +61,3 @@ workflows:
       - build:
           requires:
             - hold
-#deployment:
-#  prod:
-#    branch: master
-#    commands:
-#      - ./deploy.sh
