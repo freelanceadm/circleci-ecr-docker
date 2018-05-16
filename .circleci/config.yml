@@ -43,8 +43,6 @@ jobs:
           command: |
             login=$(aws ecr get-login --registry-ids ${DSTACCOUNT}  --region ${REGION} )
             ${login}
-            docker tag ${ACCOUNTID}.dkr.ecr.${REGION}.amazonaws.com/${SRCREPO}:${IMGTAG} ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
-            docker push ${DSTACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${DSTREPO}:${DSTTAG}
       - run:
           name: Tag pulled image with destination reponame
           command: |
